@@ -1,0 +1,13 @@
+# Secrets - DO NOT UPLOAD
+token.json
+client_secret.json
+
+# Python Virtual Environment
+.venv/
+
+# Python Cache
+__pycache__/
+*.pyc
+
+# Downloaded Client Project
+Sentient-Agent-Client/
