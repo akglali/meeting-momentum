@@ -1,5 +1,6 @@
 # google_client.py
 import os.path
+import json
 import re
 from datetime import datetime # This is the corrected import statement
 
@@ -19,14 +20,25 @@ def get_credentials():
     creds = None
     if os.path.exists("token.json"):
         creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+        
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file("client_secret.json", SCOPES)
+            # UPDATED: Load secrets from environment variable if it exists
+            client_secret_json_str = os.getenv("GOOGLE_CLIENT_SECRET_JSON")
+            if client_secret_json_str:
+                client_config = json.loads(client_secret_json_str)
+                flow = InstalledAppFlow.from_client_config(client_config, SCOPES)
+            else:
+                # Fallback to local file for local development
+                flow = InstalledAppFlow.from_client_secrets_file("client_secret.json", SCOPES)
+            
             creds = flow.run_local_server(port=0)
+            
         with open("token.json", "w") as token:
             token.write(creds.to_json())
+            
     return creds
 
 def get_briefings():
